@@ -1,0 +1,22 @@
+[project]
+name = "meetups"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aio-pika>=9.5.4",
+    "alembic>=1.14.1",
+    "bazario>=0.4.2",
+    "click>=8.1.8",
+    "dishka>=1.4.2",
+    "fastapi>=0.115.8",
+    "faststream>=0.5.34",
+    "gunicorn>=23.0.0",
+    "mypy>=1.15.0",
+    "sqlalchemy>=2.0.38",
+    "taskiq>=0.11.12",
+    "taskiq-aio-pika>=0.4.1",
+    "uuid7>=0.1.0",
+    "uvicorn>=0.34.0",
+]
