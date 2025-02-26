@@ -34,7 +34,7 @@ class AddMeetupHandler(RequestHandler[AddMeetup, MeetupId]):
 
         meetup = self._factory.create(
             title=request.title,
-            desription=request.description,
+            description=request.description,
             location=request.location,
             time=request.time,
             creator_id=current_user_id,

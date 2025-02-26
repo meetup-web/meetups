@@ -39,7 +39,7 @@ class SqlMeetupRepository(MeetupRepository):
         statement = select(
             MEETUPS_TABLE.c.meetup_id.label("entity_id"),
             MEETUPS_TABLE.c.user_id.label("creator_id"),
-            MEETUPS_TABLE.c.title.label("status"),
+            MEETUPS_TABLE.c.title.label("title"),
             MEETUPS_TABLE.c.description.label("description"),
             MEETUPS_TABLE.c.address.label("address"),
             MEETUPS_TABLE.c.city.label("city"),
@@ -61,7 +61,7 @@ class SqlMeetupRepository(MeetupRepository):
         statement = select(
             MEETUPS_TABLE.c.meetup_id.label("entity_id"),
             MEETUPS_TABLE.c.user_id.label("creator_id"),
-            MEETUPS_TABLE.c.title.label("status"),
+            MEETUPS_TABLE.c.title.label("title"),
             MEETUPS_TABLE.c.description.label("description"),
             MEETUPS_TABLE.c.address.label("address"),
             MEETUPS_TABLE.c.city.label("city"),

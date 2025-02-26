@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from datetime import _Date
+from datetime import date
 
 
 class DateProvider(ABC):
     @abstractmethod
-    def provide_current(self) -> _Date: ...
+    def provide_current(self) -> date: ...

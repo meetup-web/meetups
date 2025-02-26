@@ -9,7 +9,7 @@ MEETUPS_TABLE = Table(
     METADATA,
     Column("meetup_id", UUID(as_uuid=True), primary_key=True),
     Column("user_id", UUID(as_uuid=True), nullable=False),
-    Column("tile", Text, nullable=False),
+    Column("title", Text, nullable=False),
     Column("description", Text, nullable=False),
     Column("address", Text, nullable=False),
     Column("city", Text, nullable=False),

@@ -48,6 +48,7 @@ from meetups.bootstrap.config import (
 )
 from meetups.domain.shared.events import DomainEvent
 from meetups.infrastructure.domain_events import DomainEvents
+from meetups.infrastructure.fake_identity_provider import FakeIdentityProvider
 from meetups.infrastructure.meetup_factory import MeetupFactoryImpl
 from meetups.infrastructure.outbox.adapters.rabbitmq_outbox_publisher import (
     RabbitmqOutboxPublisher,
@@ -145,6 +146,9 @@ class ApplicationAdaptersProvider(Provider):
         WithParents[UtcDateProvider],  # type: ignore[misc]
         scope=Scope.APP,
     )
+    identity_provider = provide(
+        WithParents[FakeIdentityProvider],  # type: ignore[misc]
+    )
 
 
 class InfrastructureAdaptersProvider(Provider):
@@ -162,7 +166,9 @@ class InfrastructureAdaptersProvider(Provider):
 class ApplicationHandlersProvider(Provider):
     scope = Scope.REQUEST
 
-    hanlers = provide_all(AddMeetupHandler, GetMeetupsHandler)
+    hanlers = provide_all(
+        AddMeetupHandler, GetMeetupsHandler, OutboxStoringHandler
+    )
     behaviors = provide_all(
         CommitionBehavior,
         EventPublishingBehavior,

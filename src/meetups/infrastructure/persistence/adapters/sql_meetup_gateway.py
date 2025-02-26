@@ -21,7 +21,7 @@ class SqlMeetupGateway(MeetupGateway):
             select(
                 MEETUPS_TABLE.c.meetup_id.label("meetup_id"),
                 MEETUPS_TABLE.c.user_id.label("creator_id"),
-                MEETUPS_TABLE.c.title.label("status"),
+                MEETUPS_TABLE.c.title.label("title"),
                 MEETUPS_TABLE.c.description.label("description"),
                 MEETUPS_TABLE.c.address.label("address"),
                 MEETUPS_TABLE.c.city.label("city"),
@@ -45,7 +45,7 @@ class SqlMeetupGateway(MeetupGateway):
 
     def _load(self, cursor_row: Row) -> MeetupReadModel:
         meetup = MeetupReadModel(
-            meetup_id=MeetupId(cursor_row.entity_id),
+            meetup_id=MeetupId(cursor_row.meetup_id),
             creator_id=cursor_row.creator_id,
             title=cursor_row.title,
             description=cursor_row.description,

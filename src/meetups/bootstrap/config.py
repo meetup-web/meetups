@@ -30,7 +30,7 @@ def get_database_config() -> DatabaseConfig:
 
 
 def get_alembic_config() -> AlembicConfig:
-    resource = files("blog.infrastructure.persistence.alembic")
+    resource = files("meetups.infrastructure.persistence.alembic")
     config_file = resource.joinpath("alembic.ini")
     config_object = AlembicConfig(str(config_file))
     config_object.set_main_option("sqlalchemy.url", get_database_config().uri)
@@ -41,7 +41,7 @@ def get_uvicorn_config() -> UvicornConfig:
     return UvicornConfig(
         environ.get(
             "SERVER_FACTORY_PATH",
-            "blog.bootstrap.entrypoints.api:bootstrap_application",
+            "meetups.bootstrap.entrypoints.api:bootstrap_application",
         ),
         environ.get("SERVER_HOST", DEFAULT_SERVER_HOST),
         int(environ.get("SERVER_PORT", DEFAULT_SERVER_PORT)),

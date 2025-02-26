@@ -10,7 +10,7 @@ class MeetupFactory(ABC):
     def create(
         self,
         title: str,
-        desription: str,
+        description: str,
         location: Location,
         time: TimeSlot,
         creator_id: UserId,
