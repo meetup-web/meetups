@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from decimal import Decimal
 
 from meetups.domain.meetup.meetup_id import MeetupId
 from meetups.domain.meetup.meetup_status import MeetupStatus
@@ -21,6 +22,12 @@ class MeetupCreated(DomainEvent):
 class MeetupStatusChanged(DomainEvent):
     meetup_id: MeetupId
     status: MeetupStatus
+
+
+@dataclass(frozen=True)
+class MeetupRatingChanged(DomainEvent):
+    meetup_id: MeetupId
+    rating: Decimal
 
 
 @dataclass(frozen=True)

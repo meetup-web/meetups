@@ -10,11 +10,14 @@ from starlette.types import HTTPExceptionHandler
 from meetups.application.common.application_error import ApplicationError
 from meetups.bootstrap.config import get_database_config, get_rabbitmq_config
 from meetups.bootstrap.container import bootstrap_api_container
+from meetups.domain.shared.exceptions import DomainError
 from meetups.presentation.api.exception_handlers import (
     application_error_handler,
+    domain_error_handler,
 )
 from meetups.presentation.api.routers.healthcheck import HEALTHCHECK_ROUTER
 from meetups.presentation.api.routers.meetups import MEETUPS_ROUTER
+from meetups.presentation.api.routers.reviews import REVIEWS_ROUTER
 
 
 def add_middlewares(application: FastAPI) -> None:
@@ -30,12 +33,17 @@ def add_middlewares(application: FastAPI) -> None:
 def add_api_routers(application: FastAPI) -> None:
     application.include_router(HEALTHCHECK_ROUTER)
     application.include_router(MEETUPS_ROUTER)
+    application.include_router(REVIEWS_ROUTER)
 
 
 def add_exception_handlers(application: FastAPI) -> None:
     application.add_exception_handler(
         ApplicationError,
         cast(HTTPExceptionHandler, application_error_handler),
+    )
+    application.add_exception_handler(
+        DomainError,
+        cast(HTTPExceptionHandler, domain_error_handler),
     )
 
 

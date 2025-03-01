@@ -2,6 +2,7 @@ from uuid_extensions import uuid7  # type: ignore
 
 from meetups.application.ports.id_generator import IdGenerator
 from meetups.domain.meetup.meetup_id import MeetupId
+from meetups.domain.reviews.review_id import ReviewId
 from meetups.domain.shared.event_id import EventId
 
 
@@ -11,3 +12,6 @@ class UUID7IdGenerator(IdGenerator):
 
     def generate_meetup_id(self) -> MeetupId:
         return MeetupId(uuid7())
+
+    def generate_review_id(self) -> ReviewId:
+        return ReviewId(uuid7())

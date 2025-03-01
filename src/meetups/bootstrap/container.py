@@ -23,7 +23,6 @@ from meetups.bootstrap.providers import (
     InfrastructureAdaptersProvider,
     OutboxProvider,
     PersistenceProvider,
-    TasksProvider,
 )
 
 
@@ -75,7 +74,6 @@ def bootstrap_worker_container(
         PersistenceProvider(),
         ApplicationAdaptersProvider(),
         InfrastructureAdaptersProvider(),
-        TasksProvider(),
         context={
             RabbitmqConfig: rabbitmq_config,
             DatabaseConfig: database_config,

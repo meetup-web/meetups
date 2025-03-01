@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from decimal import Decimal
 
 from sqlalchemy import Row, select
 from sqlalchemy.ext.asyncio import AsyncConnection
@@ -30,6 +31,8 @@ class SqlMeetupGateway(MeetupGateway):
                 MEETUPS_TABLE.c.finish_date.label("finish_date"),
                 MEETUPS_TABLE.c.status.label("status"),
                 MEETUPS_TABLE.c.posted_at.label("posted_at"),
+                MEETUPS_TABLE.c.rating.label("rating"),
+                MEETUPS_TABLE.c.moderation_status.label("moderation_status"),
             )
             .limit(pagination.limit)
             .offset(pagination.offset)
@@ -60,6 +63,8 @@ class SqlMeetupGateway(MeetupGateway):
             ),
             status=cursor_row.status,
             posted_at=cursor_row.posted_at,
+            rating=Decimal(cursor_row.rating),
+            moderation_status=cursor_row.moderation_status,
         )
 
         return meetup

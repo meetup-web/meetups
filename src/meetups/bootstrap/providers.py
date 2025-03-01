@@ -31,16 +31,29 @@ from meetups.application.common.behaviors.event_publishing_behavior import (
     EventPublishingBehavior,
 )
 from meetups.application.common.markers.command import Command
-from meetups.application.operations.behaviors.validate_user_role_behavior import (
-    ValidateUserRoleBehavior,
-)
 from meetups.application.operations.read.get_meetups import (
     GetMeetups,
     GetMeetupsHandler,
 )
+from meetups.application.operations.read.get_reviews import (
+    GetReviews,
+    GetReviewsHandler,
+)
 from meetups.application.operations.write.add_meetup import (
     AddMeetup,
     AddMeetupHandler,
+)
+from meetups.application.operations.write.add_review import (
+    AddReview,
+    AddReviewHandler,
+)
+from meetups.application.operations.write.drop_review import (
+    DropReview,
+    DropReviewHandler,
+)
+from meetups.application.operations.write.edit_review import (
+    EditReview,
+    EditReviewHandler,
 )
 from meetups.bootstrap.config import (
     DatabaseConfig,
@@ -73,19 +86,16 @@ from meetups.infrastructure.persistence.adapters.sql_meetup_repository import (
 from meetups.infrastructure.persistence.adapters.sql_outbox_gateway import (
     SqlOutboxGateway,
 )
+from meetups.infrastructure.persistence.adapters.sql_review_data_mapper import (
+    SqlReviewDataMapper,
+)
+from meetups.infrastructure.persistence.adapters.sql_review_gateway import (
+    SqlReviewGateway,
+)
 from meetups.infrastructure.persistence.adapters.unit_of_work import (
     UnitOfWorkImpl,
 )
 from meetups.infrastructure.persistence.transaction import Transaction
-from meetups.infrastructure.tasks.adapters.uts_date_provider import (
-    UtcDateProvider,
-)
-from meetups.infrastructure.tasks.delete_meetup_processor import (
-    DeleteMeetupProcessor,
-)
-from meetups.infrastructure.tasks.edit_meetup_status_processor import (
-    EditMeetupStatusProcessor,
-)
 from meetups.infrastructure.utc_time_provider import UtcTimeProvider
 from meetups.infrastructure.uuid7_id_generator import UUID7IdGenerator
 
@@ -133,6 +143,7 @@ class ApplicationAdaptersProvider(Provider):
     gateways = provide_all(
         WithParents[SqlMeetupGateway],  # type: ignore[misc]
         WithParents[SqlOutboxGateway],  # type: ignore[misc]
+        WithParents[SqlReviewGateway],  # type: ignore[misc]
     )
     id_generator = provide(
         WithParents[UUID7IdGenerator],  # type: ignore[misc]
@@ -142,12 +153,9 @@ class ApplicationAdaptersProvider(Provider):
         WithParents[UtcTimeProvider],  # type: ignore[misc]
         scope=Scope.APP,
     )
-    date_provider = provide(
-        WithParents[UtcDateProvider],  # type: ignore[misc]
-        scope=Scope.APP,
-    )
     identity_provider = provide(
         WithParents[FakeIdentityProvider],  # type: ignore[misc]
+        scope=Scope.APP,
     )
 
 
@@ -157,6 +165,7 @@ class InfrastructureAdaptersProvider(Provider):
     transaction = alias(AsyncConnection, provides=Transaction)
     data_mappers = provide_all(
         WithParents[SqlMeetupDataMapper],  # type: ignore[misc]
+        WithParents[SqlReviewDataMapper],  # type: ignore[misc]
     )
     data_mappers_registry = provide(
         WithParents[SqlDataMappersRegistry],  # type: ignore[misc]
@@ -167,13 +176,18 @@ class ApplicationHandlersProvider(Provider):
     scope = Scope.REQUEST
 
     hanlers = provide_all(
-        AddMeetupHandler, GetMeetupsHandler, OutboxStoringHandler
+        AddMeetupHandler,
+        GetMeetupsHandler,
+        OutboxStoringHandler,
+        AddReviewHandler,
+        DropReviewHandler,
+        EditReviewHandler,
+        GetReviewsHandler,
     )
     behaviors = provide_all(
         CommitionBehavior,
         EventPublishingBehavior,
         EventIdGenerationBehavior,
-        ValidateUserRoleBehavior,
     )
 
 
@@ -186,9 +200,12 @@ class BazarioProvider(Provider):
 
         registry.add_request_handler(AddMeetup, AddMeetupHandler)
         registry.add_request_handler(GetMeetups, GetMeetupsHandler)
+        registry.add_request_handler(AddReview, AddReviewHandler)
+        registry.add_request_handler(DropReview, DropReviewHandler)
+        registry.add_request_handler(EditReview, EditReviewHandler)
+        registry.add_request_handler(GetReviews, GetReviewsHandler)
         registry.add_notification_handlers(DomainEvent, OutboxStoringHandler)
         registry.add_pipeline_behaviors(DomainEvent, EventIdGenerationBehavior)
-        registry.add_pipeline_behaviors(AddMeetup, ValidateUserRoleBehavior)
         registry.add_pipeline_behaviors(
             Command,
             EventPublishingBehavior,
@@ -236,36 +253,4 @@ class OutboxProvider(Provider):
             transaction=transaction,
             outbox_gateway=outbox_gateway,
             outbox_publisher=outbox_publisher,
-        )
-
-
-class TasksProvider(Provider):
-    scope = Scope.REQUEST
-
-    @provide
-    async def delete_meetup_processor(
-        self,
-        repository: SqlMeetupRepository,
-        date_provider: UtcDateProvider,
-        time_provider: UtcTimeProvider,
-        ig_generator: UUID7IdGenerator,
-    ) -> DeleteMeetupProcessor:
-        return DeleteMeetupProcessor(
-            meetup_repository=repository,
-            date_provider=date_provider,
-            id_generator=ig_generator,
-            time_provider=time_provider,
-        )
-
-    @provide
-    async def edit_meetup_status_processor(
-        self,
-        repository: SqlMeetupRepository,
-        date_provider: UtcDateProvider,
-        time_provider: UtcTimeProvider,
-    ) -> EditMeetupStatusProcessor:
-        return EditMeetupStatusProcessor(
-            meetup_repository=repository,
-            date_provider=date_provider,
-            time_provider=time_provider,
         )

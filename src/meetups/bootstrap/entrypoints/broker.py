@@ -11,27 +11,11 @@ from meetups.bootstrap.container import bootstrap_worker_container
 from meetups.infrastructure.outbox.process_outbox_cron_task import (
     process_outbox,
 )
-from meetups.infrastructure.tasks.delete_meetup_cron_task import (
-    remove_meetup_cron_task,
-)
-from meetups.infrastructure.tasks.edit_meetup_status_cron_task import (
-    edit_meetup_status_cron_task,
-)
 
 
 def add_tasks_to_taskiq(broker: AioPikaBroker) -> None:
     broker.register_task(
         process_outbox, "process_outbox", schedule=[{"cron": "*/3 * * * *"}]
-    )
-    broker.register_task(
-        remove_meetup_cron_task,
-        "remove_meetup",
-        schedule=[{"cron": "*/3 * * * *"}],
-    )
-    broker.register_task(
-        edit_meetup_status_cron_task,
-        "edit_meetup_status",
-        schedule=[{"cron": "*/3 * * * *"}],
     )
 
 
