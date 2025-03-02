@@ -12,7 +12,7 @@ from sqlalchemy import (
 )
 
 from meetups.domain.meetup.meetup_status import MeetupStatus
-from meetups.domain.shared.moderation_status import ModerationStatus
+from meetups.domain.shared.moderation import ModerationStatus
 
 METADATA = MetaData()
 

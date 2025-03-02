@@ -10,7 +10,7 @@ from meetups.application.ports.context.identity_provider import IdentityProvider
 from meetups.application.ports.context.user_role import UserRole
 from meetups.application.ports.review_gateway import ReviewGateway
 from meetups.domain.meetup.meetup_id import MeetupId
-from meetups.domain.shared.moderation_status import ModerationStatus
+from meetups.domain.shared.moderation import ModerationStatus
 
 
 @dataclass(frozen=True)

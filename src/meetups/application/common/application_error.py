@@ -6,6 +6,7 @@ class ErrorType(Enum):
     NOT_FOUND = auto()
     VALIDATION_ERROR = auto()
     APPLICATION_ERROR = auto()
+    PERMISSION_ERROR = auto()
 
 
 @dataclass(frozen=True)

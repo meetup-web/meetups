@@ -13,7 +13,7 @@ from meetups.domain.reviews.review_id import ReviewId
 from meetups.domain.reviews.reviews_collection import Reviews
 from meetups.domain.shared.entity import Entity
 from meetups.domain.shared.events import DomainEventAdder
-from meetups.domain.shared.moderation_status import ModerationStatus
+from meetups.domain.shared.moderation import ModerationStatus
 from meetups.domain.shared.unit_of_work import UnitOfWork
 from meetups.domain.shared.user_id import UserId
 
@@ -64,15 +64,17 @@ class Meetup(Entity[MeetupId]):
         moder_status: ModerationStatus,
         current_date: datetime,
     ) -> None:
-        self._ensure_moderated()
         review = self._reviews.load(review_id)
+
+        if moder_status == review.moderation_status:
+            return
+
         review.update_moderation_status(
             moderation_status=moder_status, current_date=current_date
         )
         review.mark_dirty()
 
-        if moder_status == ModerationStatus.APPROVED:
-            self._update_rating(current_date=current_date)
+        self._update_rating(current_date=current_date)
 
     def add_review(
         self,
@@ -119,6 +121,7 @@ class Meetup(Entity[MeetupId]):
         review.ensure_owner(editor_id)
         review.edit_review(rating, comment, current_date)
         review.mark_dirty()
+        self._update_rating(current_date=current_date)
 
     def drop_review(
         self, review_id: ReviewId, current_date: datetime, editor_id: UserId

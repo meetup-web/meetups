@@ -31,7 +31,11 @@ class SqlMeetupDataMapper(DataMapper[Meetup]):
         statement = (
             MEETUPS_TABLE.update()
             .where(MEETUPS_TABLE.c.meetup_id == entity.entity_id)
-            .values(status=entity.status.value, rating=entity.rating)
+            .values(
+                status=entity.status.value,
+                rating=entity.rating,
+                moderation_status=entity.moderation_status,
+            )
         )
         await self._connection.execute(statement)
 

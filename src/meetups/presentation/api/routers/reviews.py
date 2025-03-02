@@ -20,6 +20,7 @@ from meetups.application.operations.read.get_reviews import GetReviews
 from meetups.application.operations.write.add_review import AddReview
 from meetups.application.operations.write.drop_review import DropReview
 from meetups.application.operations.write.edit_review import EditReview
+from meetups.application.operations.write.moderate_review import ModerateReview
 from meetups.domain.meetup.exceptions import MeetupModerationRequiredError
 from meetups.domain.meetup.meetup_id import MeetupId
 from meetups.domain.reviews.exceptions import (
@@ -29,6 +30,7 @@ from meetups.domain.reviews.exceptions import (
     ReviewModerationRequiredError,
 )
 from meetups.domain.reviews.review_id import ReviewId
+from meetups.domain.shared.moderation import ModerationStatus
 from meetups.presentation.api.request_models import EditReviewRequest
 from meetups.presentation.api.response_models import (
     ErrorResponse,
@@ -123,4 +125,25 @@ async def edit_review(
     await sender.send(
         EditReview(meetup_id, review_id, content.comment, content.rating)
     )
+    return SuccessResponse(status=HTTP_200_OK)
+
+
+@REVIEWS_ROUTER.put(
+    path="/{meetup_id}/{review_id}/moderate",
+    responses={
+        HTTP_200_OK: {"model": SuccessResponse[None]},
+        HTTP_403_FORBIDDEN: {"model": ErrorResponse[ApplicationError]},
+        HTTP_404_NOT_FOUND: {"model": ErrorResponse[ApplicationError]},
+    },
+    status_code=HTTP_200_OK,
+)
+@inject
+async def moderate_review(
+    meetup_id: MeetupId,
+    review_id: ReviewId,
+    status: Annotated[ModerationStatus, Body()],
+    *,
+    sender: FromDishka[Sender],
+) -> SuccessResponse[None]:
+    await sender.send(ModerateReview(meetup_id, review_id, status))
     return SuccessResponse(status=HTTP_200_OK)

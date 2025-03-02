@@ -22,13 +22,14 @@ class SqlReviewDataMapper(DataMapper[Review]):
 
         await self._connection.execute(statement)
 
-    async def update(self, entit: Review) -> None:
+    async def update(self, entity: Review) -> None:
         statement = (
             REVIEWS_TABLE.update()
-            .where(REVIEWS_TABLE.c.review_id == entit.entity_id)
+            .where(REVIEWS_TABLE.c.review_id == entity.entity_id)
             .values(
-                rating=entit.rating,
-                comment=entit.comment,
+                rating=entity.rating,
+                comment=entity.comment,
+                moderation_status=entity.moderation_status,
             )
         )
 

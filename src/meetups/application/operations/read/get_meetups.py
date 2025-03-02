@@ -9,7 +9,7 @@ from meetups.application.models.pagination import Pagination
 from meetups.application.ports.context.identity_provider import IdentityProvider
 from meetups.application.ports.context.user_role import UserRole
 from meetups.application.ports.meetup_gateway import MeetupGateway
-from meetups.domain.shared.moderation_status import ModerationStatus
+from meetups.domain.shared.moderation import ModerationStatus
 
 
 @dataclass(frozen=True)
