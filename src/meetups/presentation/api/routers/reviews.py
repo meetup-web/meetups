@@ -61,7 +61,7 @@ async def add_review(
 
 
 @REVIEWS_ROUTER.get(
-    path="/{meetup_id}/reviews",
+    path="/{meetup_id}",
     responses={HTTP_200_OK: {"model": SuccessResponse[Iterable[ReviewReadModel]]}},
     status_code=HTTP_200_OK,
 )

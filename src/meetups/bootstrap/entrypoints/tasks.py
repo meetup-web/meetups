@@ -1,13 +1,19 @@
 from dishka.integrations.taskiq import (
     setup_dishka as add_container_to_taskiq,
 )
-from faststream.rabbit import RabbitBroker
-from taskiq import TaskiqEvents, TaskiqScheduler
-from taskiq.schedule_sources import LabelScheduleSource
+from faststream.rabbit import (
+    ExchangeType,
+    RabbitBroker,
+    RabbitExchange,
+)
+from taskiq import TaskiqEvents, TaskiqState
 from taskiq_aio_pika import AioPikaBroker
 
 from meetups.bootstrap.config import get_database_config, get_rabbitmq_config
 from meetups.bootstrap.container import bootstrap_worker_container
+from meetups.infrastructure.outbox.adapters.rabbitmq_outbox_publisher import (
+    ExchangeName,
+)
 from meetups.infrastructure.outbox.process_outbox_cron_task import (
     process_outbox,
 )
@@ -15,14 +21,30 @@ from meetups.infrastructure.outbox.process_outbox_cron_task import (
 
 def add_tasks_to_taskiq(broker: AioPikaBroker) -> None:
     broker.register_task(
-        process_outbox, "process_outbox", schedule=[{"cron": "*/3 * * * *"}]
+        process_outbox, "process_outbox", schedule=[{"cron": "*/1 * * * *"}]
+    )
+
+
+async def start_broker(state: TaskiqState) -> None:
+    await state.faststream_broker.start()
+
+
+async def bind_queue_to_exchange(state: TaskiqState) -> None:
+    await state.faststream_broker.declare_exchange(
+        RabbitExchange(
+            name=ExchangeName.MEETUPS, durable=True, type=ExchangeType.DIRECT
+        )
     )
 
 
 def add_event_handlers(broker: AioPikaBroker) -> None:
     broker.add_event_handler(
         TaskiqEvents.WORKER_STARTUP,
-        broker.state.faststream_broker.start,
+        start_broker,
+    )
+    broker.add_event_handler(
+        TaskiqEvents.WORKER_STARTUP,
+        bind_queue_to_exchange,
     )
 
 
@@ -34,6 +56,7 @@ def bootstrap_broker() -> AioPikaBroker:
         taskiq_return_missed_task=True,
         prefetch_count=1,
     )
+
     faststream_rabbitmq_broker = RabbitBroker(rabbitmq_config.uri)
     taskiq_broker.state.faststream_broker = faststream_rabbitmq_broker
     container = bootstrap_worker_container(
@@ -47,15 +70,3 @@ def bootstrap_broker() -> AioPikaBroker:
     add_container_to_taskiq(container, taskiq_broker)
 
     return taskiq_broker
-
-
-def bootstrap_sheduler() -> TaskiqScheduler:
-    taskiq_broker = bootstrap_broker()
-    sheduler = TaskiqScheduler(
-        broker=taskiq_broker,
-        sources=[
-            LabelScheduleSource(taskiq_broker),
-        ],
-    )
-
-    return sheduler

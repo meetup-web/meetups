@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import date
+from datetime import datetime
 
 
 @dataclass(frozen=True)
@@ -11,5 +11,5 @@ class Location:
 
 @dataclass(frozen=True)
 class TimeSlot:
-    start: date
-    finish_date: date
+    start: datetime
+    finish_date: datetime

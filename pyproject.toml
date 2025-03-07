@@ -25,6 +25,7 @@ dependencies = [
     "faststream>=0.5.34",
     "gunicorn>=23.0.0",
     "mypy>=1.15.0",
+    "numpy>=2.2.3",
     "sqlalchemy>=2.0.38",
     "taskiq>=0.11.12",
     "taskiq-aio-pika>=0.4.1",

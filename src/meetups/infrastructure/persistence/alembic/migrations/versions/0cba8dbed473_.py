@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 35604c1efe74
+Revision ID: 0cba8dbed473
 Revises:
-Create Date: 2025-03-02 10:00:36.702525
+Create Date: 2025-03-06 22:45:30.004636
 
 """
 
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "35604c1efe74"
+revision: str = "0cba8dbed473"
 down_revision: str | None = None
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
@@ -30,8 +30,8 @@ def upgrade() -> None:
         sa.Column("address", sa.Text(), nullable=False),
         sa.Column("city", sa.Text(), nullable=False),
         sa.Column("country", sa.Text(), nullable=False),
-        sa.Column("start_date", sa.Date(), nullable=False),
-        sa.Column("finish_date", sa.Date(), nullable=False),
+        sa.Column("start_date", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("finish_date", sa.DateTime(timezone=True), nullable=False),
         sa.Column(
             "status",
             sa.Enum("COMPLETED", "STARTED", "COMING", name="meetupstatus"),

@@ -8,6 +8,7 @@ from dishka import (
 from dishka.integrations.fastapi import FastapiProvider
 from dishka.integrations.taskiq import TaskiqProvider
 from faststream.rabbit import RabbitBroker
+from taskiq_aio_pika import AioPikaBroker
 from uvicorn import Config as UvicornConfig
 from uvicorn import Server as UvicornServer
 
@@ -51,6 +52,7 @@ def bootstrap_cli_container(
     alembic_config: AlembicConfig,
     uvicorn_config: UvicornConfig,
     uvicorn_server: UvicornServer,
+    taskiq_broker: AioPikaBroker,
 ) -> Container:
     return make_container(
         CliConfigProvider(),
@@ -58,6 +60,7 @@ def bootstrap_cli_container(
             AlembicConfig: alembic_config,
             UvicornConfig: uvicorn_config,
             UvicornServer: uvicorn_server,
+            AioPikaBroker: taskiq_broker,
         },
     )
 

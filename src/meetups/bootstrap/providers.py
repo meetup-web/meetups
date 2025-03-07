@@ -18,6 +18,7 @@ from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     create_async_engine,
 )
+from taskiq_aio_pika.broker import AioPikaBroker
 from uvicorn import Config as UvicornConfig
 from uvicorn import Server as UvicornServer
 
@@ -236,6 +237,7 @@ class CliConfigProvider(Provider):
     alembic_config = from_context(AlembicConfig)
     uvicorn_config = from_context(UvicornConfig)
     uvicorn_server = from_context(UvicornServer)
+    taskiq_broker = from_context(AioPikaBroker)
 
 
 class BrokerProvider(Provider):
@@ -259,7 +261,7 @@ class OutboxProvider(Provider):
         self,
         transaction: Transaction,
         outbox_gateway: SqlOutboxGateway,
-        outbox_publisher: RabbitmqOutboxPublisher,
+        outbox_publisher: OutboxPublisher,
     ) -> OutboxProcessor:
         return OutboxProcessor(
             transaction=transaction,
