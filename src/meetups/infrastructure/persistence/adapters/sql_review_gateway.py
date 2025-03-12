@@ -27,7 +27,6 @@ class SqlReviewGateway(ReviewGateway):
                 REVIEWS_TABLE.c.comment.label("comment"),
                 REVIEWS_TABLE.c.rating.label("rating"),
                 REVIEWS_TABLE.c.posted_at.label("posted_at"),
-                REVIEWS_TABLE.c.moderation_status.label("moderation_status"),
             )
             .where(REVIEWS_TABLE.c.meetup_id == meetup_id)
             .limit(pagination.limit)
@@ -50,7 +49,6 @@ class SqlReviewGateway(ReviewGateway):
             comment=cursor_row.comment,
             rating=cursor_row.rating,
             posted_at=cursor_row.posted_at,
-            moderation_status=cursor_row.moderation_status,
         )
 
         return review

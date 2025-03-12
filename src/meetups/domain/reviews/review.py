@@ -8,7 +8,6 @@ from meetups.domain.reviews.exceptions import (
 from meetups.domain.reviews.review_id import ReviewId
 from meetups.domain.shared.entity import Entity
 from meetups.domain.shared.events import DomainEventAdder
-from meetups.domain.shared.moderation import ModerationStatus
 from meetups.domain.shared.unit_of_work import UnitOfWork
 from meetups.domain.shared.user_id import UserId
 
@@ -24,13 +23,11 @@ class Review(Entity[ReviewId]):
         reviewer_id: UserId,
         rating: int,
         comment: str,
-        moderation_status: ModerationStatus = ModerationStatus.PENDING,
         added_at: datetime,
     ) -> None:
         Entity.__init__(self, entity_id, event_adder, unit_of_work)
 
         self._meetup_id = meetup_id
-        self._moderation_status = moderation_status
         self._reviewer_id = reviewer_id
         self._rating = rating
         self._comment = comment
@@ -88,7 +85,3 @@ class Review(Entity[ReviewId]):
     @property
     def added_at(self) -> datetime:
         return self._added_at
-
-    @property
-    def moderation_status(self) -> ModerationStatus:
-        return self._moderation_status

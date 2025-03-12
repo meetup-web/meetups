@@ -58,24 +58,6 @@ class Meetup(Entity[MeetupId]):
         self._moderation_status = moderation_status
         self.mark_dirty()
 
-    def update_review_moderation_status(
-        self,
-        review_id: ReviewId,
-        moder_status: ModerationStatus,
-        current_date: datetime,
-    ) -> None:
-        review = self._reviews.load(review_id)
-
-        if moder_status == review.moderation_status:
-            return
-
-        review.update_moderation_status(
-            moderation_status=moder_status, current_date=current_date
-        )
-        review.mark_dirty()
-
-        self._update_rating(current_date=current_date)
-
     def add_review(
         self,
         review_id: ReviewId,
@@ -134,9 +116,7 @@ class Meetup(Entity[MeetupId]):
         self._reviews.remove(review)
         self._update_rating(current_date=current_date)
 
-    def edit_meetup_status(
-        self, status: MeetupStatus, current_date: datetime
-    ) -> None:
+    def edit_meetup_status(self, status: MeetupStatus, current_date: datetime) -> None:
         self._ensure_moderated()
         self._status = status
         event = MeetupStatusChanged(
@@ -147,9 +127,7 @@ class Meetup(Entity[MeetupId]):
 
     def _calculate_meetup_rating(self) -> Decimal:
         review_ratings: list[Decimal] = [
-            Decimal(review.rating)
-            for review in self._reviews
-            if review.moderation_status == ModerationStatus.APPROVED
+            Decimal(review.rating) for review in self._reviews
         ]
 
         return mean(review_ratings)

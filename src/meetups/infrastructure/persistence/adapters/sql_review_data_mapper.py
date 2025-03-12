@@ -17,7 +17,6 @@ class SqlReviewDataMapper(DataMapper[Review]):
             rating=entity.rating,
             comment=entity.comment,
             posted_at=entity.added_at,
-            moderation_status=entity.moderation_status,
         )
 
         await self._connection.execute(statement)
@@ -29,7 +28,6 @@ class SqlReviewDataMapper(DataMapper[Review]):
             .values(
                 rating=entity.rating,
                 comment=entity.comment,
-                moderation_status=entity.moderation_status,
             )
         )
 

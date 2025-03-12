@@ -43,7 +43,6 @@ REVIEWS_TABLE = Table(
         ForeignKey("meetups.meetup_id"),
         nullable=False,
     ),
-    Column("moderation_status", Enum(ModerationStatus), nullable=False),
     Column("user_id", UUID(as_uuid=True), nullable=False),
     Column("rating", DECIMAL, nullable=False),
     Column("comment", Text, nullable=False),
