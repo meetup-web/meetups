@@ -56,17 +56,12 @@ class SqlMeetupRepository(MeetupRepository):
                 MEETUPS_TABLE.c.status.label("status"),
                 MEETUPS_TABLE.c.posted_at.label("posted_at"),
                 MEETUPS_TABLE.c.rating.label("rating"),
-                MEETUPS_TABLE.c.moderation_status.label(
-                    "meetup_moderation_status"
-                ),
+                MEETUPS_TABLE.c.moderation_status.label("meetup_moderation_status"),
                 REVIEWS_TABLE.c.review_id.label("review_id"),
                 REVIEWS_TABLE.c.user_id.label("reviewer_id"),
                 REVIEWS_TABLE.c.rating.label("review_rating"),
                 REVIEWS_TABLE.c.comment.label("review_comment"),
                 REVIEWS_TABLE.c.posted_at.label("review_posted_at"),
-                REVIEWS_TABLE.c.moderation_status.label(
-                    "review_moderation_status"
-                ),
             )
             .join(
                 REVIEWS_TABLE,
@@ -122,7 +117,6 @@ class SqlMeetupRepository(MeetupRepository):
                     rating=review_row.review_rating,
                     comment=review_row.review_comment,
                     added_at=review_row.review_posted_at,
-                    moderation_status=review_row.review_moderation_status,
                 )
                 reviews.add(review)
 
