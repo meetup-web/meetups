@@ -4,7 +4,6 @@ from meetups.domain.meetup.meetup_id import MeetupId
 from meetups.domain.reviews.events import ReviewCommentChanged, ReviewRatingChanged
 from meetups.domain.reviews.exceptions import (
     OnlyOwnerCanUpdateReviewError,
-    ReviewModerationRequiredError,
 )
 from meetups.domain.reviews.review_id import ReviewId
 from meetups.domain.shared.entity import Entity
@@ -43,18 +42,8 @@ class Review(Entity[ReviewId]):
         comment: str,
         current_date: datetime,
     ) -> None:
-        self._ensure_moderated()
-        self.update_moderation_status(ModerationStatus.PENDING, current_date)
         self.edit_rating(rating, current_date)
         self.edit_comment(comment, current_date)
-
-    def update_moderation_status(
-        self, moderation_status: ModerationStatus, current_date: datetime
-    ) -> None:
-        if moderation_status == self._moderation_status:
-            return
-
-        self._moderation_status = moderation_status
 
     def edit_rating(self, rating: int, current_date: datetime) -> None:
         if rating == self._rating:
@@ -79,10 +68,6 @@ class Review(Entity[ReviewId]):
     def ensure_owner(self, user_id: UserId) -> None:
         if self._reviewer_id != user_id:
             raise OnlyOwnerCanUpdateReviewError
-
-    def _ensure_moderated(self) -> None:
-        if self._moderation_status != ModerationStatus.APPROVED:
-            raise ReviewModerationRequiredError
 
     @property
     def meetup_id(self) -> MeetupId:
