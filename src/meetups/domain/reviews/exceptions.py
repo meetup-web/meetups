@@ -16,8 +16,3 @@ class ReviewAlreadyAddedError(DomainError):
 @dataclass(frozen=True)
 class ReviewDoesNotExistError(DomainError):
     message: str = field(default="Review does not exist")
-
-
-@dataclass(frozen=True)
-class ReviewModerationRequiredError(DomainError):
-    message: str = field(default="Review moderation is required")

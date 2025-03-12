@@ -1,3 +1,5 @@
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from typing import cast
 
 from dishka.integrations.fastapi import (
@@ -10,6 +12,7 @@ from starlette.types import HTTPExceptionHandler
 from meetups.application.common.application_error import ApplicationError
 from meetups.bootstrap.config import get_database_config, get_rabbitmq_config
 from meetups.bootstrap.container import bootstrap_api_container
+from meetups.bootstrap.entrypoints.stream import bootstrap_stream
 from meetups.domain.shared.exceptions import DomainError
 from meetups.presentation.api.exception_handlers import (
     application_error_handler,
@@ -18,6 +21,14 @@ from meetups.presentation.api.exception_handlers import (
 from meetups.presentation.api.routers.healthcheck import HEALTHCHECK_ROUTER
 from meetups.presentation.api.routers.meetups import MEETUPS_ROUTER
 from meetups.presentation.api.routers.reviews import REVIEWS_ROUTER
+
+
+@asynccontextmanager
+async def lifespan(application: FastAPI) -> AsyncIterator[None]:
+    stream = bootstrap_stream()
+    await stream.start()
+    yield
+    await stream.stop()
 
 
 def add_middlewares(application: FastAPI) -> None:
@@ -48,7 +59,7 @@ def add_exception_handlers(application: FastAPI) -> None:
 
 
 def bootstrap_application() -> FastAPI:
-    application = FastAPI()
+    application = FastAPI(lifespan=lifespan)
     dishka_container = bootstrap_api_container(
         get_rabbitmq_config(),
         get_database_config(),

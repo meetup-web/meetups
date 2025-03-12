@@ -19,7 +19,6 @@ from meetups.domain.reviews.exceptions import (
     OnlyOwnerCanUpdateReviewError,
     ReviewAlreadyAddedError,
     ReviewDoesNotExistError,
-    ReviewModerationRequiredError,
 )
 from meetups.domain.shared.exceptions import DomainError
 from meetups.presentation.api.response_models import ErrorData, ErrorResponse
@@ -33,13 +32,10 @@ STATUS_MAP = {
     ReviewAlreadyAddedError: HTTP_409_CONFLICT,
     OnlyOwnerCanUpdateReviewError: HTTP_403_FORBIDDEN,
     MeetupModerationRequiredError: HTTP_403_FORBIDDEN,
-    ReviewModerationRequiredError: HTTP_403_FORBIDDEN,
 }
 
 
-async def application_error_handler(
-    _: Request, exception: ApplicationError
-) -> Response:
+async def application_error_handler(_: Request, exception: ApplicationError) -> Response:
     error_data = ErrorData[None](exception.message)
     status_code = STATUS_MAP[exception.error_type]
     response_content = ErrorResponse(status_code, error_data)

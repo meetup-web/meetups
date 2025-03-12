@@ -60,10 +60,6 @@ from meetups.application.operations.write.moderate_meetup import (
     ModerateMeetup,
     ModerateMeetupHandler,
 )
-from meetups.application.operations.write.moderate_review import (
-    ModerateReview,
-    ModerateReviewHandler,
-)
 from meetups.bootstrap.config import (
     DatabaseConfig,
     RabbitmqConfig,
@@ -120,17 +116,13 @@ class PersistenceProvider(Provider):
     scope = Scope.REQUEST
 
     @provide(scope=Scope.APP)
-    async def engine(
-        self, postgres_config: DatabaseConfig
-    ) -> AsyncIterator[AsyncEngine]:
+    async def engine(self, postgres_config: DatabaseConfig) -> AsyncIterator[AsyncEngine]:
         engine = create_async_engine(postgres_config.uri)
         yield engine
         await engine.dispose()
 
     @provide
-    async def connection(
-        self, engine: AsyncEngine
-    ) -> AsyncIterator[AsyncConnection]:
+    async def connection(self, engine: AsyncEngine) -> AsyncIterator[AsyncConnection]:
         async with engine.connect() as connection:
             yield connection
 
@@ -193,7 +185,6 @@ class ApplicationHandlersProvider(Provider):
         EditReviewHandler,
         GetReviewsHandler,
         ModerateMeetupHandler,
-        ModerateReviewHandler,
     )
     behaviors = provide_all(
         CommitionBehavior,
@@ -216,7 +207,6 @@ class BazarioProvider(Provider):
         registry.add_request_handler(EditReview, EditReviewHandler)
         registry.add_request_handler(GetReviews, GetReviewsHandler)
         registry.add_request_handler(ModerateMeetup, ModerateMeetupHandler)
-        registry.add_request_handler(ModerateReview, ModerateReviewHandler)
         registry.add_notification_handlers(DomainEvent, OutboxStoringHandler)
         registry.add_pipeline_behaviors(DomainEvent, EventIdGenerationBehavior)
         registry.add_pipeline_behaviors(
