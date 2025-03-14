@@ -14,7 +14,10 @@ from meetups.application.common.application_error import (
     ApplicationError,
     ErrorType,
 )
-from meetups.domain.meetup.exceptions import MeetupModerationRequiredError
+from meetups.domain.meetup.exceptions import (
+    MeetupModerationRequiredError,
+    MeetupNotFinishedError,
+)
 from meetups.domain.reviews.exceptions import (
     OnlyOwnerCanUpdateReviewError,
     ReviewAlreadyAddedError,
@@ -32,6 +35,7 @@ STATUS_MAP = {
     ReviewAlreadyAddedError: HTTP_409_CONFLICT,
     OnlyOwnerCanUpdateReviewError: HTTP_403_FORBIDDEN,
     MeetupModerationRequiredError: HTTP_403_FORBIDDEN,
+    MeetupNotFinishedError: HTTP_409_CONFLICT,
 }
 
 

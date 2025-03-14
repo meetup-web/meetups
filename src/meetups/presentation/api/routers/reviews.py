@@ -20,7 +20,10 @@ from meetups.application.operations.read.get_reviews import GetReviews
 from meetups.application.operations.write.add_review import AddReview
 from meetups.application.operations.write.drop_review import DropReview
 from meetups.application.operations.write.edit_review import EditReview
-from meetups.domain.meetup.exceptions import MeetupModerationRequiredError
+from meetups.domain.meetup.exceptions import (
+    MeetupModerationRequiredError,
+    MeetupNotFinishedError,
+)
 from meetups.domain.meetup.meetup_id import MeetupId
 from meetups.domain.reviews.exceptions import (
     OnlyOwnerCanUpdateReviewError,
@@ -41,7 +44,9 @@ REVIEWS_ROUTER = APIRouter(prefix="/reviews", tags=["reviews"])
     path="/",
     responses={
         HTTP_201_CREATED: {"model": SuccessResponse[ReviewId]},
-        HTTP_409_CONFLICT: {"model": ErrorResponse[ReviewAlreadyAddedError]},
+        HTTP_409_CONFLICT: {
+            "model": ErrorResponse[ReviewAlreadyAddedError | MeetupNotFinishedError]
+        },
         HTTP_404_NOT_FOUND: {"model": ErrorResponse[ApplicationError]},
         HTTP_403_FORBIDDEN: {"model": ErrorResponse[MeetupModerationRequiredError]},
     },
