@@ -1,13 +1,12 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from dishka.integrations.fastapi import (
     setup_dishka as add_container_to_fastapi,
 )
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.types import HTTPExceptionHandler
 
 from meetups.application.common.application_error import ApplicationError
 from meetups.bootstrap.config import get_database_config, get_rabbitmq_config
@@ -21,6 +20,9 @@ from meetups.presentation.api.exception_handlers import (
 from meetups.presentation.api.routers.healthcheck import HEALTHCHECK_ROUTER
 from meetups.presentation.api.routers.meetups import MEETUPS_ROUTER
 from meetups.presentation.api.routers.reviews import REVIEWS_ROUTER
+
+if TYPE_CHECKING:
+    from starlette.types import HTTPExceptionHandler
 
 
 @asynccontextmanager
@@ -50,11 +52,11 @@ def add_api_routers(application: FastAPI) -> None:
 def add_exception_handlers(application: FastAPI) -> None:
     application.add_exception_handler(
         ApplicationError,
-        cast(HTTPExceptionHandler, application_error_handler),
+        cast("HTTPExceptionHandler", application_error_handler),
     )
     application.add_exception_handler(
         DomainError,
-        cast(HTTPExceptionHandler, domain_error_handler),
+        cast("HTTPExceptionHandler", domain_error_handler),
     )
 
 
