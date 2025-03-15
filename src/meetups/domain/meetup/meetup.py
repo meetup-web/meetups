@@ -3,12 +3,10 @@ from decimal import Decimal
 from statistics import mean
 
 from meetups.domain.meetup.events import (
-    MeetupModerationStatusChanged,
     MeetupRatingChanged,
     MeetupStatusChanged,
 )
 from meetups.domain.meetup.exceptions import (
-    MeetupModerationRequiredError,
     MeetupNotFinishedError,
 )
 from meetups.domain.meetup.meetup_id import MeetupId
@@ -20,7 +18,6 @@ from meetups.domain.reviews.review_id import ReviewId
 from meetups.domain.reviews.reviews_collection import Reviews
 from meetups.domain.shared.entity import Entity
 from meetups.domain.shared.events import DomainEventAdder
-from meetups.domain.shared.moderation import ModerationStatus
 from meetups.domain.shared.unit_of_work import UnitOfWork
 from meetups.domain.shared.user_id import UserId
 
@@ -38,7 +35,6 @@ class Meetup(Entity[MeetupId]):
         location: Location,
         time: TimeSlot,
         status: MeetupStatus = MeetupStatus.COMING,
-        moderation_status: ModerationStatus = ModerationStatus.PENDING,
         reviews: Reviews = Reviews(),
         posted_at: datetime,
         rating: Decimal = Decimal("0.0"),
@@ -54,22 +50,6 @@ class Meetup(Entity[MeetupId]):
         self._posted_at = posted_at
         self._rating = rating
         self._reviews = reviews
-        self._moderation_status = moderation_status
-
-    def update_moderation_status(
-        self, moderation_status: ModerationStatus, current_date: datetime
-    ) -> None:
-        if moderation_status == self._moderation_status:
-            return
-
-        self._moderation_status = moderation_status
-        event = MeetupModerationStatusChanged(
-            meetup_id=self._entity_id,
-            status=moderation_status,
-            event_date=current_date,
-        )
-        self.mark_dirty()
-        self.add_event(event)
 
     def add_review(
         self,
@@ -79,7 +59,6 @@ class Meetup(Entity[MeetupId]):
         comment: str,
         current_date: datetime,
     ) -> Review:
-        self._ensure_moderated()
         self._enusre_finished(current_date)
         review = Review(
             entity_id=review_id,
@@ -131,7 +110,6 @@ class Meetup(Entity[MeetupId]):
         self._update_rating(current_date=current_date)
 
     def edit_meetup_status(self, status: MeetupStatus, current_date: datetime) -> None:
-        self._ensure_moderated()
         self._status = status
         event = MeetupStatusChanged(
             meetup_id=self._entity_id, status=status, event_date=current_date
@@ -154,17 +132,9 @@ class Meetup(Entity[MeetupId]):
         self.add_event(event)
         self.mark_dirty()
 
-    def _ensure_moderated(self) -> None:
-        if self._moderation_status != ModerationStatus.APPROVED:
-            raise MeetupModerationRequiredError
-
     def _enusre_finished(self, current_date: datetime) -> None:
         if self._time.finish_date < current_date:
             raise MeetupNotFinishedError
-
-    @property
-    def moderation_status(self) -> ModerationStatus:
-        return self._moderation_status
 
     @property
     def creator_id(self) -> UserId:

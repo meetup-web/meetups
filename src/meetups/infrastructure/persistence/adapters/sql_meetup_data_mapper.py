@@ -23,7 +23,6 @@ class SqlMeetupDataMapper(DataMapper[Meetup]):
             finish_date=entity.time.finish_date,
             status=entity.status.value,
             posted_at=entity.posted_at,
-            moderation_status=entity.moderation_status,
         )
         await self._connection.execute(statement)
 
@@ -34,7 +33,6 @@ class SqlMeetupDataMapper(DataMapper[Meetup]):
             .values(
                 status=entity.status.value,
                 rating=entity.rating,
-                moderation_status=entity.moderation_status,
             )
         )
         await self._connection.execute(statement)

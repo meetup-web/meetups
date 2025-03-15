@@ -56,10 +56,6 @@ from meetups.application.operations.write.edit_review import (
     EditReview,
     EditReviewHandler,
 )
-from meetups.application.operations.write.moderate_meetup import (
-    ModerateMeetup,
-    ModerateMeetupHandler,
-)
 from meetups.bootstrap.config import (
     DatabaseConfig,
     RabbitmqConfig,
@@ -184,7 +180,6 @@ class ApplicationHandlersProvider(Provider):
         DropReviewHandler,
         EditReviewHandler,
         GetReviewsHandler,
-        ModerateMeetupHandler,
     )
     behaviors = provide_all(
         CommitionBehavior,
@@ -206,7 +201,6 @@ class BazarioProvider(Provider):
         registry.add_request_handler(DropReview, DropReviewHandler)
         registry.add_request_handler(EditReview, EditReviewHandler)
         registry.add_request_handler(GetReviews, GetReviewsHandler)
-        registry.add_request_handler(ModerateMeetup, ModerateMeetupHandler)
         registry.add_notification_handlers(DomainEvent, OutboxStoringHandler)
         registry.add_pipeline_behaviors(DomainEvent, EventIdGenerationBehavior)
         registry.add_pipeline_behaviors(

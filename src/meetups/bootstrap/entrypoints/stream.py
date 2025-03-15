@@ -8,7 +8,6 @@ from meetups.bootstrap.config import get_database_config, get_rabbitmq_config
 from meetups.bootstrap.container import (
     bootstrap_api_container as bootstrap_stream_container,
 )
-from meetups.presentation.stream.consumers.moderation import MODERATION_ROUTER
 
 
 def add_middlewares(broker: RabbitBroker) -> None:
@@ -16,7 +15,7 @@ def add_middlewares(broker: RabbitBroker) -> None:
 
 
 def add_consumers(broker: RabbitBroker) -> None:
-    broker.include_router(MODERATION_ROUTER)
+    pass
 
 
 def bootstrap_stream() -> FastStream:

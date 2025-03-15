@@ -56,7 +56,6 @@ class SqlMeetupRepository(MeetupRepository):
                 MEETUPS_TABLE.c.status.label("status"),
                 MEETUPS_TABLE.c.posted_at.label("posted_at"),
                 MEETUPS_TABLE.c.rating.label("rating"),
-                MEETUPS_TABLE.c.moderation_status.label("meetup_moderation_status"),
                 REVIEWS_TABLE.c.review_id.label("review_id"),
                 REVIEWS_TABLE.c.user_id.label("reviewer_id"),
                 REVIEWS_TABLE.c.rating.label("review_rating"),
@@ -103,7 +102,6 @@ class SqlMeetupRepository(MeetupRepository):
             posted_at=first_row.posted_at,
             rating=first_row.rating,
             reviews=reviews,
-            moderation_status=first_row.meetup_moderation_status,
         )
 
         for review_row in cursor_res:

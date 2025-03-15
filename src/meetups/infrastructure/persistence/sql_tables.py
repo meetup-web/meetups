@@ -11,7 +11,6 @@ from sqlalchemy import (
 )
 
 from meetups.domain.meetup.meetup_status import MeetupStatus
-from meetups.domain.shared.moderation import ModerationStatus
 
 METADATA = MetaData()
 
@@ -29,7 +28,6 @@ MEETUPS_TABLE = Table(
     Column("start_date", DateTime(timezone=True), nullable=False),
     Column("finish_date", DateTime(timezone=True), nullable=False),
     Column("status", Enum(MeetupStatus), nullable=False),
-    Column("moderation_status", Enum(ModerationStatus), nullable=False),
     Column("posted_at", DateTime(timezone=True), nullable=False),
 )
 
