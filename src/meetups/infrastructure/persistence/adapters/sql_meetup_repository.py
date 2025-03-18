@@ -36,7 +36,7 @@ class SqlMeetupRepository(MeetupRepository):
 
     def delete(self, meetup: Meetup) -> None:
         self._unit_of_work.register_deleted(meetup)
-        self._identity_map.pop(meetup.entity_id)
+        self._identity_map.pop(meetup.entity_id, None)
 
     async def load(self, meetup_id: MeetupId) -> Meetup | None:
         if meetup_id in self._identity_map:
